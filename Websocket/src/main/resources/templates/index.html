@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div>
+    <span>&lt; 채팅방 &gt;</span>
+    <div class="msgArea"></div>
+</div>
+	    <input id="setNick" type="text" placeholder="닉네임을 입력하세요." class="nickname">
+	    <input id="content" type="text" placeholder="보낼 메세지를 입력하세요." onkeypress="submitMsg()">
+	    <button id="sendBtn" type="button" value="전송" onclick="sendMsg()">전송</button>
+	    <button id="exitBtn" type="button" value="나가기" onclick="WSclose()">나가기</button>
+</body>
+<script>
+        let socket = new WebSocket("ws://" + location.host + "/websocket");
+
+        socket.onopen = function (e) {
+            socket.send("********************두두등장********************")
+        };
+
+        socket.onerror = function (e){
+            console.log(e);
+        }
+        
+        socket.onmessage = function (e) {
+            let msgArea = document.querySelector('.msgArea');
+            let newMsg = document.createElement('div');
+            newMsg.innerText=e.data;
+            msgArea.append(newMsg);
+            document.body.scrollTop = document.body.scrollHeight;
+        }
+
+        function sendMsg() {
+        	document.getElementById('setNick').disabled = true;
+            let content = document.getElementById("content").value;
+            document.getElementById("content").value = '';
+            socket.send(content);
+        }
+        
+        function WSclose() {
+        	socket.send("********************퇴퇴퇴장********************")
+            window.location.href = 'http://' + location.host + '/outside';
+        }
+        
+        function submitMsg(e) {
+        	if(window.event.keyCode == 13){
+	        	sendMsg();
+	        	document.getElementById("content").value = '';
+        	}
+        }
+       
+        
+</script>
+</html>
